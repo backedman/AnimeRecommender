@@ -1,5 +1,6 @@
 
 from Algorithms.recommendations import recommendations
+from AniListAPI.AniListCalls import AniListCalls
 from config import Config
 import json
 from AniListAPI.animeList import animeList
@@ -37,16 +38,90 @@ def main():
             aniList = json.loads(json_file)
 
 
-    #print recommendations_help
-    titleList = get_recommendations()
+    #ge first set of recommendations
+    titleList,rec_input = get_recommendations(username=username)
+
+    # set current page number and maximum page number (each page has 9)
+    page = 1
 
     #print list of recommendations (with page switching options)
+    while (True):
+        addSpacing()
+
+        maxPage = int((len(titleList) / 9 + 1.5))
+
+
+        print("Page " + str(page) + "/" + str(maxPage))
+        # shows anime in page
+        for x in range(1, 10):
+            if (x <= len(titleList) - (page - 1) * 9):
+                listIndex = x - 1 + (page - 1) * 9
+                listAnime = list(titleList[listIndex].keys())[0]
+                print(str(x) + "." + str(listAnime) +" - " + str(list(titleList[listIndex].values())[0]['similarity_score']))
+
+        # gets user input
+        print("         ")
+        print("Q. Previous Page ")
+        print("E. Next Page")
+        print("A. Choose Page")
+        print("             ")
+        print("S. Search")
+        print("R. Calculate Recommendations")
+        print('U. Update list')
+        print("O. Options")
+        print("X. Exit Program ")
+        ans = input()
+        print("\n\n\n\n\n\n\n\n\n\n")
+
+
+        #user is given options to change pages (Q,E)
+
+        # goes back a page if user chooses "Q"
+        if (ans == "Q" or ans == "q"):
+            page -= 1
+
+        # goes forward a page if user chooses "E"
+        elif (ans == "E" or ans == "e"):
+            page += 1
+
+        # goes to user specified page
+        elif (ans == "A" or ans == "a"):
+            page = int(input())
+
+        elif (ans == "S" or ans == "s"):
+            animeName = search_anime()
+
+            for anime in titleList:
+                if list(anime.keys())[0] == animeName:
+                    #TODO: get detailed information about the anime
+                    print(list(anime.values())[0])
+                    input('Press Enter to Continue...')
+                    break
+                
+
+        elif (ans == "R" or ans == "r"):
+            
+            titleList,rec_input = get_recommendations(username=username)
+
+        elif (ans == 'X' or ans == 'x'):
+            break
+
+        elif (ans == 'u' or ans == 'U'):
+            titleList,rec_input = get_recommendations(username=username, rec_input=rec_input)
+
+        elif (int(ans) < 10 and int(ans) > 0):
+            addSpacing()
+            
+            listIndex = int(ans) - 1 + (page - 1) * 9
+            animeName = list(titleList[listIndex].keys())[0]
+           
+            print(list(titleList[listIndex].values())[0])
+            input('Press Enter to Continue...')
 
     #if user selects an anime, they get detailed information about the anime, including
     # the tags, the genres, and description about the anime
         #they also get an option to remove it from the recommendation list
 
-    #user is also given options to change pages (Q,E)
 
     #user is also given options to update their list (U)
 
@@ -59,7 +134,7 @@ def main():
 
 
 
-def get_recommendations(help_only=False):
+def get_recommendations(help_only=False, username=None, rec_input=None):
 
     print(
     '''
@@ -100,8 +175,13 @@ def get_recommendations(help_only=False):
         return
 
     while True:
-        ans = input()
-        
+        if(rec_input is None):
+            ans = input()
+        else:
+            ans = rec_input
+
+        print(ans)
+
         if(ans.lower().strip() == 'x'):
             titleList = []
             break
@@ -116,8 +196,41 @@ def get_recommendations(help_only=False):
 
                 #titleScoreList = [f"{anime['animeName']} - {anime['similarity_score']}" for anime in result]
                 #print(titleScoreList[0])
-                break
+                return titleList,ans
+                
 
+def search_anime():
+    print("Name of anime to search")
+    animeName = input()
+    titleList = AniListCalls.getAnimeSearchList(animeName, 5)
+
+    page = 1
+
+    while True:
+
+        try:
+    # set current page number and maximum page number (each page has 9)
+            addSpacing()
+
+            maxPage = int((len(titleList) / 9 + 1.5))
+
+
+            print("Page " + str(page) + "/" + str(maxPage))
+            # shows anime in page
+            for x in range(1, 10):
+                if (x <= len(titleList) - (page - 1) * 9):
+                    listIndex = x - 1 + (page - 1) * 9
+                    listAnime = titleList[listIndex]
+                    print(str(x) + "." + str(listAnime))
+
+            ans = input("Type number to get detailed information")
+
+            if(int(ans) <= len(titleList) and int(ans) > 0):
+                return titleList[int(ans) - 1]
+
+            
+        except:
+            print('Invalid Input. Try Again')
 
 def addSpacing():
     for x in range(50):

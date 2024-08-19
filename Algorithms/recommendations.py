@@ -35,7 +35,7 @@ class recommendations():
         # Weight the similarity score by the user's rating for the anime in dataset 1
         similarity_score = np.sum(genres_tags_similarity * dataset1['user_score'])
 
-        similarity_score *= anime2_popularity_avg_score_recommendations
+        similarity_score *= anime2_popularity_avg_score_recommendations/30
 
         return similarity_score
 
