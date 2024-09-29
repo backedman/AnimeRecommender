@@ -134,7 +134,7 @@ def main():
 
 
         #if user selects an anime, they get detailed information about the anime, including
-        elif (int(ans) < 10 and int(ans) > 0):
+        elif (type(ans) is int and int(ans) < 10 and int(ans) > 0):
             addSpacing()
             
             listIndex = int(ans) - 1 + (page - 1) * 9
