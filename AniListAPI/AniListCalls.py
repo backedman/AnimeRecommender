@@ -7,11 +7,85 @@ from tqdm import tqdm
 
 class AniListCalls():
 
-    def getAnimeDetailed(animeName):
+    def getAnimeDetailed(animeName, description=False):
         '''gets detailed list of anime'''
 
         #sets query and variables to get anime from API
-        query = '''
+
+        if(description):
+            query = '''
+            query($animeName : String) {
+                Media(search : $animeName, type: ANIME)
+                {
+                    id
+                    idMal
+                    title{
+                        userPreferred
+                    }
+                    tags{
+                        category
+                        name
+                        rank
+                        isGeneralSpoiler
+                        isMediaSpoiler
+                    }
+                    seasonYear
+                    season
+                    popularity
+                    duration
+                    format
+                    status(version: 1)
+                    description
+                    episodes
+                    genres
+                    duration
+                    averageScore
+                    favourites
+                    countryOfOrigin
+                    startDate {
+                      year
+                      month
+                      day
+                    }
+                    endDate {
+                      year
+                      month
+                      day
+                    }
+                    studios{
+                        edges{
+                            node{
+                                name
+                            }
+                        }
+                    }
+                    relations{
+                        edges{
+                            relationType(version: 2)
+                            node{
+                                title {
+                                  userPreferred
+                                }
+                            }
+                        }
+                    }
+                    recommendations{
+                        edges{
+                            node{
+                                rating
+                                mediaRecommendation{
+                                    title{
+                                        userPreferred
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            '''
+        else:
+            query = '''
             query($animeName : String) {
                 Media(search : $animeName, type: ANIME)
                 {

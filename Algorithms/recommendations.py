@@ -134,10 +134,7 @@ class recommendations():
                                         rec_scores[rec_name] += valManip.logKeepNeg(rating + 1) * (diction['user_score']/10 + 0.3)
 
                     # Add this anime's data to the watchedDict dictionary
-                    watchedDict[name] = diction
-
-        print(watchedDict.keys())
-                    
+                    watchedDict[name] = diction                    
 
         # Initialize a dictionary to store data for all anime
         allDict = {}
@@ -234,7 +231,6 @@ class recommendations():
 
         # Sort the new_set dataframe by similarity score in descending order
         new_set = new_set.sort_values(by="similarity_score", ascending=False)
-        print(new_set)
 
         # Return a list of recommended anime names from the new_set dataframe
         return new_set[['animeName', 'average_score', 'popularity', 'recommendations', 'similarity_score']]
